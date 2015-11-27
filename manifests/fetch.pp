@@ -68,6 +68,13 @@ define wget::fetch (
     false => '--no-verbose'
   }
 
+  if $cache_dir != undef {
+    $cache = $cache_file ? {
+      undef   => inline_template('<%= require \'uri\'; File.basename(URI::parse(@source).path) %>'),
+      default => $cache_file,
+    }
+  }
+
   # Windows exec unless testing requires different syntax
   if ($::operatingsystem == 'windows') {
     $exec_path = $::path
@@ -76,11 +83,14 @@ define wget::fetch (
     $exec_path = '/usr/bin:/usr/sbin:/bin:/usr/local/bin:/opt/local/bin:/usr/sfw/bin'
     if $unless != undef {
       $unless_test = $unless
-    }
-    elsif $redownload == true or $cache_dir != undef  {
+    } elsif $redownload == true {
       $unless_test = 'test'
     } else {
-      $unless_test = "test -s '${_destination}'"
+      if $cache_dir == undef  {
+        $unless_test = "test -s '${_destination}'"
+      } else {
+        $unless_test = "test -s '${cache_dir}/${cache}'"
+      }
     }
   }
 
