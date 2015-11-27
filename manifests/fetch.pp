@@ -177,10 +177,6 @@ define wget::fetch (
   }
 
   if $cache_dir != undef {
-    $cache = $cache_file ? {
-      undef   => inline_template('<%= require \'uri\'; File.basename(URI::parse(@source).path) %>'),
-      default => $cache_file,
-    }
     file { $_destination:
       ensure   => file,
       source   => "${cache_dir}/${cache}",
