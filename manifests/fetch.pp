@@ -163,12 +163,9 @@ define wget::fetch (
       $command = "wget ${verbose_option}${nocheckcert_option}${no_cookies_option}${header_option}${user_option}${output_option}${flags_joined} \"${source}\""
     }
     default: {
-      $command = "wget ${verbose_option}${nocheckcert_option}${no_cookies_option}${header_option}${user_option}${output_option}${flags_joined} \"${source}\" && echo '${source_hash}  ${_destination}' | md5sum -c --quiet"
+      $command = "wget ${verbose_option}${nocheckcert_option}${no_cookies_option}${header_option}${user_option}${output_option}${flags_joined} \"${source}\" && echo '${source_hash}  ${initial_destination}' | md5sum -c --quiet"
     }
   }
-
-
-
 
   exec { "wget-${name}":
     command     => $command,
