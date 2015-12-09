@@ -47,6 +47,18 @@ define wget::fetch (
     }
   }
 
+  if $cache_dir != undef {
+    $cache = $cache_file ? {
+      undef   => inline_template('<%= require \'uri\'; File.basename(URI::parse(@source).path) %>'),
+      default => $cache_file,
+    }
+  }
+
+  $initial_destination = $cache_dir ? {
+    undef   => $_destination,
+    default => "${cache_dir}/${cache}",
+  }
+
   $http_proxy_env = $::http_proxy ? {
     undef   => [],
     default => [ "HTTP_PROXY=${::http_proxy}", "http_proxy=${::http_proxy}" ],
@@ -66,13 +78,6 @@ define wget::fetch (
   $verbose_option = $verbose ? {
     true  => '--verbose',
     false => '--no-verbose'
-  }
-
-  if $cache_dir != undef {
-    $cache = $cache_file ? {
-      undef   => inline_template('<%= require \'uri\'; File.basename(URI::parse(@source).path) %>'),
-      default => $cache_file,
-    }
   }
 
   # Windows exec unless testing requires different syntax
@@ -119,7 +124,7 @@ define wget::fetch (
       default  => "password=${password}",
     }
 
-    file { "${_destination}.wgetrc":
+    file { "${initial_destination}.wgetrc":
       owner    => $execuser,
       mode     => '0600',
       content  => $wgetrc_content,
@@ -144,7 +149,7 @@ define wget::fetch (
   }
 
   $flags_joined = $flags ? {
-    undef => '',
+    undef   => '',
     default => inline_template(' <%= @flags.join(" ") %>')
   }
 
