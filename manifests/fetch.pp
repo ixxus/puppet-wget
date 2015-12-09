@@ -69,7 +69,7 @@ define wget::fetch (
   }
   $password_env = $user ? {
     undef   => [],
-    default => [ "WGETRC=\"${initial_destination}.wgetrc\"" ],
+    default => [ "WGETRC=${initial_destination}.wgetrc" ],
   }
 
   # not using stdlib.concat to avoid extra dependency
