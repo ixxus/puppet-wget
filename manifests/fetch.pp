@@ -27,6 +27,7 @@ define wget::fetch (
   $cache_file         = undef,
   $flags              = undef,
   $backup             = true,
+  $show_diff          = true,
   $mode               = undef,
   $unless             = undef,
 ) {
@@ -180,13 +181,14 @@ define wget::fetch (
 
   if $cache_dir != undef {
     file { $_destination:
-      ensure   => file,
-      source   => "${cache_dir}/${cache}",
-      owner    => $execuser,
-      mode     => $mode,
-      require  => Exec["wget-${name}"],
-      backup   => $backup,
-      schedule => $schedule,
+      ensure    => file,
+      source    => "${cache_dir}/${cache}",
+      owner     => $execuser,
+      mode      => $mode,
+      require   => Exec["wget-${name}"],
+      backup    => $backup,
+      show_diff => $show_diff,
+      schedule  => $schedule,
     }
   }
 
